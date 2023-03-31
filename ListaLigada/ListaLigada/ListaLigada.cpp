@@ -1,4 +1,3 @@
-
 #include <iostream>
 using namespace std;
 
@@ -59,7 +58,6 @@ void menu()
 			break;
 		case 6: excluirElemento();
 			break;
-
 		case 7:
 			return;
 		default:
@@ -72,9 +70,8 @@ void menu()
 
 void inicializar()
 {
-
-	// se a lista j� possuir elementos
-	// libera a memoria ocupada
+	// se a lista já possuir elementos
+// libera a memoria ocupada
 	NO* aux = primeiro;
 	while (aux != NULL) {
 		NO* paraExcluir = aux;
@@ -127,74 +124,105 @@ void inserirElemento()
 	cout << "Digite o elemento: ";
 	cin >> novo->valor;
 	novo->prox = NULL;
-
-	NO* jaExiste = posicaoElemento(novo->valor);
-
-	if (jaExiste) {
-		cout << "numero j� colocado na lista!" << endl;
-		return;
-	}
-
-	if (primeiro == NULL)
-	{
+	
+	if (primeiro == NULL) {// se não a nada! qualquer um será o primeiro.
 		primeiro = novo;
 	}
-	else
-	{
-		// procura o final da lista
+	else if (primeiro->valor > novo->valor) { // verifica se o o primeiro elemente da lista atual é o primeiro.
+		NO* aux = primeiro;
+		primeiro = novo;
+		novo->prox = aux;
+	}
+	/* else { adiciona o novo elemento de forma ordenada na lista.  *logica do pimenta*
+		NO* aux = primeiro;
+		while (aux->prox != NULL && novo->valor > aux->prox->valor) {		leg:
+			aux = aux->prox;												&& = E
+		}																	|| = Ou
+		novo->prox = aux->prox;
+		aux->prox = novo;
+	}*/
+	else { //metodo claudio
 		NO* aux = primeiro;
 		while (aux->prox != NULL) {
+			if (aux->prox->valor > novo->valor) {
+				break;
+			} 
 			aux = aux->prox;
 		}
+		novo->prox = aux->prox;
 		aux->prox = novo;
 	}
 }
 
-void excluirElemento()
+void excluirElemento() /* para a explicação da função, vá para o fim do codigo*/
 {
-	int del;
-	cout << "digite o numero a ser excluido:";
-	cin >> del;
-	NO* delet = posicaoElemento(del);
-	if (delet == primeiro) {
-		primeiro = primeiro->prox;
+	NO* deletar = (NO*)malloc(sizeof(NO));
+	cout << "Digite o numero a ser excluido:" << endl;
+	cin >> deletar->valor;
+	deletar->prox = NULL;
+	if (primeiro == NULL) {
+		cout << "Lista vazia";
 	}
-	else if (delet != NULL) {
+	else if (deletar == primeiro) {
+		primeiro = primeiro->prox; /*primeiro passará a ser o proximo do primeiro, que no caso é NULL*/
+		free(deletar); /*free é usado para liberar o espaço ocupado na memoria pelo ponteiro*/
+	}
+	else { /*deletar != primero */
 		NO* aux = primeiro;
-		while (aux->prox != delet) {
+		while (aux->prox != NULL) {
+			if (aux->prox->valor == deletar->valor) {
+				aux->prox = aux->prox->prox;
+				free(deletar);
+				break;
+			}
+		}
+	}
+}
+
+void buscarElemento() {
+	NO* busca = (NO*)malloc(sizeof(NO));
+	cout << "Buscar: " << endl;
+	cin >> busca->valor;
+	busca->prox = NULL;
+
+	if (primeiro == NULL) {
+		cout << "Lista vazia!" << endl;
+	}
+	else {
+		NO* aux = primeiro;
+		int cont = 0;
+		while (aux != NULL) {
+			if (aux->valor == busca->valor) {
+				cont++;
+			}
 			aux = aux->prox;
 		}
-		aux->prox = delet->prox;
-		free(delet);
-	}
-}
-
-void buscarElemento()
-{
-	int numero;
-	cout << "digite o numero a ser buscado:" << endl;
-	cin >> numero;
-	if (posicaoElemento(numero)==NULL) {
-		cout << "nope" << endl;
-}
-	else {
-		cout << "tem" << endl;
-	}
-	}
-
-
-
-// retorna um ponteiro para o elemento buscado
-// ou NULL se o elemento n�o estiver na lista
-NO* posicaoElemento(int numero)
-{
-	NO* aux = primeiro;
-	while (aux != NULL) {
-		if (aux->valor == numero)
-		{
-			break;
+		if (cont > 0) {
+			cout << "Elemento encontrado " << endl;
 		}
-		aux = aux->prox;
+		else {
+			cout << "Numero nao encontrado." << endl;
+		}
 	}
-	return aux;
+
+	free(busca);
 }
+//Nesta nova versão, a função usa uma variável cont para contar quantas vezes o valor buscado aparece na lista.A variável aux é atualizada dentro do laço while para percorrer toda a lista.No final do laço, a função verifica se cont é maior que zero e imprime a mensagem correspondente.Além disso, a função libera a memória alocada para o nó busca usando free().
+
+
+
+
+
+
+
+/*A função começa criando um novo nó deletar com o valor a ser excluído e apontando seu ponteiro prox para NULL.
+Em seguida, a função verifica se a lista está vazia. Se estiver vazia, a função imprime "Lista vazia".
+
+Se a lista não estiver vazia, a função verifica se o nó a ser excluído é a cabeça da lista (deletar == primeiro).
+
+Se for, a função atualiza primeiro para apontar para o próximo elemento da lista e libera a memória alocada para o nó deletar usando "free()".
+
+Se o nó a ser excluído não for a cabeça da lista, a função percorre a lista com um ponteiro "aux" e verifica se o próximo nó em relação a "aux" tem o valor a ser excluído.
+Se tiver, a função atualiza o ponteiro prox de aux para pular o nó a ser excluído e libera a memória alocada para o nó deletar usando "free()".
+
+Note que a função percorre a lista enquanto "aux->prox != NULL".*/
